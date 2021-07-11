@@ -13,12 +13,18 @@ class MainWindow(QDialog):
     def browsefiles(self):
         fname = QFileDialog.getOpenFileName(self, 'open file', 'D:', 'XML files (*.xml)')
         self.filename.setText(fname[0])
+        path = fname[0]
+        with open(path, "r") as f:
+            data = f.read()
+            self.textEdit.setText(data)
+            print(data)
+
 app = QApplication(sys.argv)
 mainwindow = MainWindow()
 widget = QtWidgets.QStackedWidget()
 widget.addWidget(mainwindow)
-widget.setFixedWidth(400)
-widget.setFixedHeight(300)
+widget.setFixedWidth(1000)
+widget.setFixedHeight(900)
 widget.show()
 sys.exit(app.exec_())
 

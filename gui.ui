@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>811</width>
+    <height>632</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,9 +16,9 @@
   <widget class="QLineEdit" name="filename">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>140</y>
-     <width>181</width>
+     <x>30</x>
+     <y>30</y>
+     <width>591</width>
      <height>22</height>
     </rect>
    </property>
@@ -26,14 +26,50 @@
   <widget class="QPushButton" name="Browse">
    <property name="geometry">
     <rect>
-     <x>240</x>
-     <y>140</y>
+     <x>640</x>
+     <y>30</y>
      <width>93</width>
      <height>28</height>
     </rect>
    </property>
    <property name="text">
     <string>Browse</string>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="textEdit">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>110</y>
+     <width>591</width>
+     <height>431</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>10</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>File Path</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>90</y>
+     <width>55</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>XML file</string>
    </property>
   </widget>
  </widget>
