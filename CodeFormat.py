@@ -117,28 +117,73 @@ def fix_error(code: str):
     return new_code
 
 
+def no_spaces_str(string: str):
+    final = str()
+    for ch in string:
+        if not ch.isspace():
+            final += ch
+    return final
+
+
+def add_spaces(tap):
+    i = 0
+    final = str()
+    while i < tap:
+        final += "\t"
+        i += 1
+    return final
+
+
+def prettify_code(s: str):
+    code = no_spaces_str(s)
+    final = str()
+    taps = 0
+    i = 0
+    while i < len(code):
+        if i + 1 < len(code) and code[i+1] == "<":
+            if i + 2 < len(code) and code[i+2] != "/":
+                taps += 1
+                final += code[i]
+                i += 1
+                if code[i - 1] == ">":
+                    final += "\n"
+                    final += add_spaces(taps)
+            else:
+                final += code[i]
+                i += 1
+                if code[i - 1] == ">":
+                    final += "\n"
+                    final += add_spaces(taps)
+                taps -= 1
+        final += code[i]
+        i += 1
+
+    return final
+
+
 #tial
-s = "<users>" \
-    "\n\t<user>" \
-    "\n\t\t<id>l" \
-    "\n\t\t<name>mustafa</name>" \
-    "\n\t\t<followers>" \
-    "\n\t\t\t<follower>" \
-    "\n\t\t\t\t<name>l</id>" \
-    "\n\t\t\t</follower>" \
-    "\n\t\t" \
-    "\n\t" \
-    "\n"
-index = 0
-tt = ""
-while index < len(s):
-    if not s[index].isspace():
-        tt += s[index]
-    index += 1
+# ss = "<users>" \
+#     "\n\t<user>" \
+#     "\n\t\t<id>l" \
+#     "\n\t\t<name>mustafa</name>" \
+#     "\n\t\t<followers>" \
+#     "\n\t\t\t<follower>" \
+#     "\n\t\t\t\t<name>l</id>" \
+#     "\n\t\t\t</follower>" \
+#     "\n\t\t" \
+#     "\n\t" \
+#     "\n"
+# index = 0
+# tt = ""
+# while index < len(ss):
+#     if not ss[index].isspace():
+#         tt += ss[index]
+#     index += 1
+#
+#
+# nn = fix_error(ss)
+# print(prettify_code(nn))
 
-
-#print(tt)
-
-print(fix_error(tt))
-print(mark_error(fix_error(tt)))
+# print(fix_error(tt))
+# print(mark_error(fix_error(tt)))
 
