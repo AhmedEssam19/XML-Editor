@@ -30,10 +30,14 @@ def mark_error(code: str):
                     tag_line.pop()
                 else:
                     if not str_in_tag.isspace():
-                        error_list.append(line_number)
-                        tag_line.pop()
-                        tag.pop()
-                        str_in_tag = "\t"
+                        if not tag.is_empty() and temp != tag.top():
+                            error_list.append(tag_line.top())
+                            tag_line.pop()
+                            tag.pop()
+                            str_in_tag = "\t"
+                        if not tag.is_empty() and temp == tag.top():
+                            tag.pop()
+                            tag_line.pop()
                     else:
                         if line_number != 1:
                             error_list.append(line_number - 1)
@@ -95,6 +99,11 @@ def fix_error(code: str):
                 i += 1
             elif code[i] == '/':
                 i += 1
+                # if not str_in_tag.isspace():
+                #     str_in_tag = "\t"
+                #     new_code = new_code[:-1]
+                #     new_code += f"</{tag.top()}>"
+                #     tag.pop()
                 while code[i] != '>':
                     temp += code[i]
                     i += 1
@@ -105,9 +114,16 @@ def fix_error(code: str):
                     tag.pop()
                 else:
                     if not str_in_tag.isspace():
-                        new_code += f"</{tag.top()}>"
-                        tag.pop()
-                        str_in_tag = "\t"
+                        if not tag.is_empty() and temp != tag.top():
+                            while new_code[-1].isspace():
+                                new_code = new_code[:-1]
+                            new_code += f"</{tag.top()}>"
+                            tag.pop()
+                            str_in_tag = "\t"
+                        if not tag.is_empty() and temp == tag.top():
+                            str_in_tag = "\t"
+                            new_code += f"</{temp}>"
+                            tag.pop()
                     else:
                         while not tag.is_empty() and temp != tag.top():
                             new_code += f"</{tag.top()}>"
@@ -197,11 +213,18 @@ def prettify_code(s: str):
 #     "\n\t\t<followers>" \
 #     "\n\t\t\t<follower>" \
 #     "\n\t\t\t\t<name>l</id>" \
-#     "\n\t\t\t</follower>" \
-#     "\n\t\t" \
+#     "\n\t\t\t" \
+#     "\n\t\t</followers>" \
 #     "\n\t</user>" \
 #     "\n</users>"
 #
+# ff = "<catalog>" \
+#      "\n<book id =ndnfdl>" \
+#      "\n<author>Bjbfjnfo" \
+#      "\n" \
+#      "\n</catalog>" \
+
+
 # ss = "<?dnlndjNNv'vnvfd?>" \
 #      "<!--dshdsivpisvn-->" \
 #      "<note>" \
@@ -217,8 +240,9 @@ def prettify_code(s: str):
 # nn = fix_error(ss)
 
 # print(fix_error(tt))
-# print(ss)
-# print(mark_error(ss))
-#print(fix_error(ss))
-# print(prettify_code(ss))
+# print(ff)
+# print(mark_error(ff))
+#
+# print(fix_error(ff))
+# print(prettify_code(ff))
 # prettify_code(ss)
