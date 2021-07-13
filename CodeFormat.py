@@ -93,9 +93,11 @@ def fix_error(code: str):
             i += 1
             temp = str()
             if code[i] == '!' or code[i] == '?':
+                new_code += '<'
                 while code[i] != '>':
                     new_code += code[i]
                     i += 1
+                new_code += '>'
                 i += 1
             elif code[i] == '/':
                 i += 1
@@ -199,6 +201,9 @@ def prettify_code(s: str):
                     final += "\n"
                     final += add_spaces(taps)
                 taps -= 1
+        if i + 1 < len(code):
+            if (code[i] == '-' or code[i] == '?' or code[i] == '/') and code[i + 1] == '>':
+                taps -= 1
         final += code[i]
         i += 1
 
@@ -206,26 +211,30 @@ def prettify_code(s: str):
 
 
 #tial
-# ss = "<users>" \
+# ss = "<?dnlndjNNv'vnvfd?>" \
+#      "\n<!--dshdsivpisvn-->" \
+#      "\n<users>" \
 #     "\n\t<user id has_id>" \
+#      "\n\t\t<!--dldnid-->" \
 #     "\n\t\t<id>l" \
 #     "\n\t\t<name>mustafa</name>" \
 #     "\n\t\t<followers>" \
 #     "\n\t\t\t<follower>" \
 #     "\n\t\t\t\t<name>l</id>" \
-#     "\n\t\t\t" \
-#     "\n\t\t</followers>" \
+#     "\n\t\t\t</follower>" \
+#     "\n\t\t" \
 #     "\n\t</user>" \
 #     "\n</users>"
 #
 # ff = "<catalog>" \
 #      "\n<book id =ndnfdl>" \
+#      "\n<name dnsdnl />" \
 #      "\n<author>Bjbfjnfo" \
-#      "\n" \
+#      "\n</book>" \
 #      "\n</catalog>" \
-
-
-# ss = "<?dnlndjNNv'vnvfd?>" \
+#
+#
+# mm = "<?dnlndjNNv'vnvfd?>" \
 #      "<!--dshdsivpisvn-->" \
 #      "<note>" \
 #      "<frame f_num=2 />" \
@@ -239,10 +248,9 @@ def prettify_code(s: str):
 #
 # nn = fix_error(ss)
 
-# print(fix_error(tt))
-# print(ff)
-# print(mark_error(ff))
+
+# print(mm)
+# print(mark_error(mm))
 #
-# print(fix_error(ff))
-# print(prettify_code(ff))
-# prettify_code(ss)
+# print(fix_error(ss))
+# print(prettify_code(fix_error(ss)))
