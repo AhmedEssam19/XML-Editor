@@ -14,7 +14,11 @@ def mark_error(code: str):
         if code[i] == '<':
             i += 1
             temp = str()
-            if code[i] == '/':
+            if code[i] == '!' or code[i] == '?':
+                while code[i] != '>':
+                    i += 1
+                i += 1
+            elif code[i] == '/':
                 i += 1
                 while code[i] != '>':
                     temp += code[i]
@@ -46,12 +50,21 @@ def mark_error(code: str):
                     error_list.append(tag_line.top())
                     tag_line.pop()
                     tag.pop()
-                while code[i] != '>':
+                closed = False
+                while code[i] != '>' and code[i] != ' ':
+                    if code[i] == '/' and code[i + 1] == '>':
+                        closed = True
                     temp += code[i]
                     i += 1
+                if code[i] == ' ':
+                    while code[i] != '>':
+                        if code[i] == '/' and code[i + 1] == '>':
+                            closed = True
+                        i += 1
                 i += 1
-                tag.push(temp)
-                tag_line.push(line_number)
+                if not closed:
+                    tag.push(temp)
+                    tag_line.push(line_number)
 
         else:
             str_in_tag += code[i]
@@ -75,7 +88,12 @@ def fix_error(code: str):
         if code[i] == '<':
             i += 1
             temp = str()
-            if code[i] == '/':
+            if code[i] == '!' or code[i] == '?':
+                while code[i] != '>':
+                    new_code += code[i]
+                    i += 1
+                i += 1
+            elif code[i] == '/':
                 i += 1
                 while code[i] != '>':
                     temp += code[i]
@@ -99,14 +117,28 @@ def fix_error(code: str):
                             tag.pop()
             else:
                 if not str_in_tag.isspace():
+                    if new_code[-1].isspace():
+                        while new_code[-1].isspace():
+                            new_code = new_code[:-1]
                     new_code += f"</{tag.top()}>"
                     tag.pop()
-                while code[i] != '>':
+                closed = False
+                while code[i] != '>' and code[i] != ' ':
+                    if code[i] == '/' and code[i + 1] == '>':
+                        closed = True
                     temp += code[i]
                     i += 1
+                after_temp = ""
+                if code[i] == ' ':
+                    while code[i] != '>':
+                        if code[i] == '/' and code[i + 1] == '>':
+                            closed = True
+                        after_temp += code[i]
+                        i += 1
                 i += 1
-                new_code += f"<{temp}>"
-                tag.push(temp)
+                new_code += f"<{temp + after_temp}>"
+                if not closed:
+                    tag.push(temp)
         else:
             str_in_tag += code[i]
             new_code += code[i]
@@ -114,15 +146,11 @@ def fix_error(code: str):
     while not tag.is_empty():
         new_code += f"</{tag.top()}>"
         tag.pop()
-    return new_code
+    return prettify_code(new_code)
 
 
-def no_spaces_str(string: str):
-    final = str()
-    for ch in string:
-        if not ch.isspace():
-            final += ch
-    return final
+def no_spaces_str(text: str) -> str:
+    return '>'.join([subtext.strip('\n' '\t') for subtext in text.split('>')])
 
 
 def add_spaces(tap):
@@ -163,7 +191,7 @@ def prettify_code(s: str):
 
 #tial
 # ss = "<users>" \
-#     "\n\t<user>" \
+#     "\n\t<user id has_id>" \
 #     "\n\t\t<id>l" \
 #     "\n\t\t<name>mustafa</name>" \
 #     "\n\t\t<followers>" \
@@ -171,19 +199,26 @@ def prettify_code(s: str):
 #     "\n\t\t\t\t<name>l</id>" \
 #     "\n\t\t\t</follower>" \
 #     "\n\t\t" \
-#     "\n\t" \
-#     "\n"
-# index = 0
-# tt = ""
-# while index < len(ss):
-#     if not ss[index].isspace():
-#         tt += ss[index]
-#     index += 1
+#     "\n\t</user>" \
+#     "\n</users>"
 #
+# ss = "<?dnlndjNNv'vnvfd?>" \
+#      "<!--dshdsivpisvn-->" \
+#      "<note>" \
+#      "<frame f_num=2 />" \
+#      "<to>Tove</to>" \
+#      "<from>Jani</from>" \
+#      "<heading>Reminder</heading>" \
+#      "<body>Don't forget me this weekend!</body>" \
+#      "</note>"
+
+# tt = no_spaces_str(ss)
 #
 # nn = fix_error(ss)
-# print(prettify_code(nn))
 
 # print(fix_error(tt))
-# print(mark_error(fix_error(tt)))
-
+# print(ss)
+# print(mark_error(ss))
+#print(fix_error(ss))
+# print(prettify_code(ss))
+# prettify_code(ss)
