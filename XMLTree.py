@@ -22,6 +22,9 @@ class Node:
     def get_property(self, index):
         return self.tagProperties[index]
 
+    def is_leaf(self):
+        return len(self.children) == 0
+
 
 class XMLTree:
     def __init__(self, my_file):
@@ -40,7 +43,7 @@ class XMLTree:
             if stack_top[0] != '/':
                 if stack_top[-1] != '>':
                     node.add_child(Node(stack_top))
-                    self.editedXML.pop()
+                    # self.editedXML.pop()
                 return
 
             elif stack_top[0] == '/':
@@ -57,13 +60,11 @@ def main():
             <id>1</id>
             <name>user1</name>
             <posts>
-                <post>
-                aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalllllllllllllllllllllllllllllllllllllllllllllllll
-                llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+                <post>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalllllllllllllllllllllllllllllllllllllllllllllllll
+                    llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
                 </post>
-                <post>
-                mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmssssssssssssssssssssssssssssssssssssssssssss
-                m,mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllllllllllllllllllllllllllllllllll
+                <post>mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmssssssssssssssssssssssssssssssssssssssssssss
+                    m,mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllllllllllllllllllllllllllllllllll
                 </post>
             </posts>
             <followers>
@@ -79,7 +80,7 @@ def main():
                 
     '''
     tree = XMLTree(txt)
-    print(tree.root.children[0].tag)
+    print(tree.root.children[0].children[1].children[0].tag)
 
 
 if __name__ == "__main__":
