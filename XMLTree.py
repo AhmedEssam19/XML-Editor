@@ -35,7 +35,7 @@ class XMLTree:
         self.create_tree(self.root)
 
     def create_tree(self, node):
-        while self.editedXML:
+        while len(self.editedXML) > 1:
             stack_top = self.editedXML.pop()
             if stack_top[0] != '/':
                 if stack_top[-1] != '>':
