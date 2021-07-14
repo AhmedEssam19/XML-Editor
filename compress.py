@@ -138,4 +138,6 @@ def expand(file_name: str) -> str:
 
 
 def minify(text: str) -> str:
-    return '>'.join([subtext.strip('\n ') for subtext in text.split('>')])
+    text = '>'.join([subtext.strip('\n\t ') for subtext in text.split('>')])
+    text = '<'.join([subtext.strip('\n\t ') for subtext in text.split('<')])
+    return text
