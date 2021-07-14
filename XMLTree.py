@@ -6,22 +6,45 @@ class Node:
         self.tag = name
 
         self.children = []
-        self.tagProperties = []
+        self.tagProperties = ""
 
     def add_child(self, node):
         self.children.append(node)
 
-    def get_child(self, index):
-        return self.children[index]
+    def get_children(self):
+        return self.children
 
     def add_property(self, str):
-        self.tagProperties.append(str)
+        self.tagProperties = str
 
-    def get_property(self, index):
-        return self.tagProperties[index]
+    def get_properties(self):
+        dict = {}
+        if len(self.tagProperties) == 0:
+            return dict
+        properties = self.tagProperties.partition(' ')
+        for i in range(len(properties)):
+            if properties[i] != '' and properties[i] != ' ':
+                single_property = properties[i].partition('=')
+                dict[single_property[0]] = single_property[2]
+        return dict
 
     def is_leaf(self):
         return len(self.children) == 0
+
+    def height(self):
+        max = -1
+        sum = 0
+        stack = [self]
+        while len(stack) > 0:
+            popped = stack.pop()
+            if popped.is_leaf():
+                if sum > max:
+                    max = sum
+                sum = 0
+            sum += 1
+            for child in popped.get_children():
+                stack.append(child)
+        return max
 
 
 class XMLTree:
@@ -35,19 +58,28 @@ class XMLTree:
         self.root = Node(re.sub("[>/]", '', self.editedXML.pop()))
         self.create_tree(self.root)
 
+    def get_root(self):
+        return self.root
+
     def create_tree(self, node):
         while len(self.editedXML) > 1:
             stack_top = self.editedXML.pop()
             if stack_top[0] != '/':
+
+                # get the attributes out of the tag
                 string_of_property = re.findall('(?<=\s).*?(?=>)', stack_top)
                 if len(string_of_property) > 0:
                     node.add_property(string_of_property[0])
 
+                # the open tag is next to the data without spacing, this cond. check if there's data or it just open tag
                 if stack_top[-1] != '>':
+
+                    # if there's data, extract it
                     split_tag_from_data = stack_top.partition('>')
                     node.add_child(Node(split_tag_from_data[2]))
                 return
 
+            # if it is closing tag create a node, as a child to the current node
             elif stack_top[0] == '/':
                 new_node = Node(re.sub("[>/]", '', stack_top))
                 node.add_child(new_node)
@@ -55,12 +87,89 @@ class XMLTree:
         return
 
 
+class RefStr:
+    # wrap string in object, so it is passed by reference rather than by value
+
+    def __init__(self, s=""):
+        self.s = s
+
+    def __add__(self, s):
+        self.s += s
+        return self
+
+    def __str__(self):
+        return self.s
+
+
+def XML2json(tree):
+    str = RefStr()
+    print("{")
+    dfs(tree.get_root(), 1, str)
+    print(str)
+    print('}')
+
+
+def dfs(node, depth, str):
+    open_bracket = False
+    if not node.is_leaf():
+        str += f'{"  "*depth}'
+    str += f'"{node.tag}"'
+    if node.is_leaf():
+        str += ",\n"
+    elif not node.is_leaf():
+        str += ":"
+    if node.height() > 1 or len(node.get_properties()) > 0:
+        open_bracket = True
+        str += "{\n"
+        key = list(node.get_properties().keys())
+        val = list(node.get_properties().values())
+        for i in range(len(node.get_properties())):
+            str += f'{"  "*depth} "{key[i]}": {val[i]},\n'
+        if len(node.get_properties()) > 0 and node.get_children()[0].is_leaf():
+            str += f'{"  " * depth} "#text": '
+
+    for child in reversed(node.get_children()):
+        dfs(child, depth+1, str)
+
+    if open_bracket:
+        if depth > 1:
+            str += f'{"  "*depth}}},\n'
+        else:
+            str += f'{"  " * depth}}}'
+
+
+
+#
+# def dfs(node, depth):
+#     open_bracket = False
+#     if not node.is_leaf():
+#         print("  " * depth, end="")
+#     print(f'"{node.tag}"', end="")
+#     if node.is_leaf():
+#         print(",")
+#     elif not node.is_leaf():
+#         print(":", end=" ")
+#     if node.height() > 1 or len(node.get_properties()) > 0:
+#         open_bracket = True
+#         print("{")
+#         key = list(node.get_properties().keys())
+#         val = list(node.get_properties().values())
+#         for i in range(len(node.get_properties())):
+#             print(f'{"  " * depth} "{key[i]}": {val[i]},')
+#
+#     for child in reversed(node.get_children()):
+#         dfs(child, depth + 1)
+#
+#     if open_bracket:
+#         print(f'{"  " * depth}}}')
+
+
 def main():
     txt = '''
     <users>
         <user myAtrr="mostafa">
             <id wow="mom">1</id>
-            <name>user1</name>
+            <name adena_bengarab="heeeelp">user1</name>
             <posts>
                 <post>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalllllllllllllllllllllllllllllllllllllllllllllllll
                     llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
@@ -71,7 +180,7 @@ def main():
             </posts>
             <followers>
                 <follower>
-                    <id>2</id>
+                    <id wa7ed="ana" etnen="mostafa">2</id>
                 </follower>
                 <follower>
                     <id>4</id>
@@ -82,7 +191,9 @@ def main():
                 
     '''
     tree = XMLTree(txt)
-    print(tree.root.children[0].children[3].children[0].tag)
+    # print(tree.root.children[0].children[0].height())
+    XML2json(tree)
+    # print(tree.root.children[0].children[0].children[1].children[0].get_properties())
 
 
 if __name__ == "__main__":
