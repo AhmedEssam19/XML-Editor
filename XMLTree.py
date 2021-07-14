@@ -4,9 +4,7 @@ import re
 class Node:
     def __init__(self, name):
         self.tag = name
-        # self.tagType = None
 
-        self.tagValue = None
         self.children = []
         self.tagProperties = []
 
@@ -16,8 +14,8 @@ class Node:
     def get_child(self, index):
         return self.children[index]
 
-    def add_property(self, node):
-        self.tagProperties.append(node)
+    def add_property(self, str):
+        self.tagProperties.append(str)
 
     def get_property(self, index):
         return self.tagProperties[index]
@@ -41,9 +39,13 @@ class XMLTree:
         while len(self.editedXML) > 1:
             stack_top = self.editedXML.pop()
             if stack_top[0] != '/':
+                string_of_property = re.findall('(?<=\s).*?(?=>)', stack_top)
+                if len(string_of_property) > 0:
+                    node.add_property(string_of_property[0])
+
                 if stack_top[-1] != '>':
-                    node.add_child(Node(stack_top))
-                    # self.editedXML.pop()
+                    split_tag_from_data = stack_top.partition('>')
+                    node.add_child(Node(split_tag_from_data[2]))
                 return
 
             elif stack_top[0] == '/':
@@ -56,8 +58,8 @@ class XMLTree:
 def main():
     txt = '''
     <users>
-        <user>
-            <id>1</id>
+        <user myAtrr="mostafa">
+            <id wow="mom">1</id>
             <name>user1</name>
             <posts>
                 <post>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalllllllllllllllllllllllllllllllllllllllllllllllll
@@ -80,7 +82,7 @@ def main():
                 
     '''
     tree = XMLTree(txt)
-    print(tree.root.children[0].children[1].children[0].tag)
+    print(tree.root.children[0].children[3].children[0].tag)
 
 
 if __name__ == "__main__":
