@@ -101,11 +101,6 @@ def fix_error(code: str):
                 i += 1
             elif code[i] == '/':
                 i += 1
-                # if not str_in_tag.isspace():
-                #     str_in_tag = "\t"
-                #     new_code = new_code[:-1]
-                #     new_code += f"</{tag.top()}>"
-                #     tag.pop()
                 while code[i] != '>':
                     temp += code[i]
                     i += 1
@@ -168,13 +163,13 @@ def fix_error(code: str):
 
 
 def no_spaces_str(text: str) -> str:
-    return '>'.join([subtext.strip('\n' '\t') for subtext in text.split('>')])
+    return '>'.join([subtext.strip('\n' ' ' '\t') for subtext in text.split('>')])
 
 
-def add_spaces(tap):
+def add_spaces(tab):
     i = 0
     final = str()
-    while i < tap:
+    while i < tab:
         final += "\t"
         i += 1
     return final
@@ -183,27 +178,25 @@ def add_spaces(tap):
 def prettify_code(s: str):
     code = no_spaces_str(s)
     final = str()
-    taps = 0
+    tabs = 0
     i = 0
     while i < len(code):
         if i + 1 < len(code) and code[i+1] == "<":
             if i + 2 < len(code) and code[i+2] != "/":
-                taps += 1
+                tabs += 1
                 final += code[i]
                 i += 1
                 if code[i - 1] == ">":
-                    final += "\n"
-                    final += add_spaces(taps)
+                    final += f"\n{add_spaces(tabs)}"
             else:
                 final += code[i]
                 i += 1
                 if code[i - 1] == ">":
-                    final += "\n"
-                    final += add_spaces(taps)
-                taps -= 1
+                    final += f"\n{add_spaces(tabs)}"
+                tabs -= 1
         if i + 1 < len(code):
             if (code[i] == '-' or code[i] == '?' or code[i] == '/') and code[i + 1] == '>':
-                taps -= 1
+                tabs -= 1
         final += code[i]
         i += 1
 
@@ -225,14 +218,14 @@ def prettify_code(s: str):
 #     "\n\t\t" \
 #     "\n\t</user>" \
 #     "\n</users>"
-#
+
 # ff = "<catalog>" \
-#      "\n<book id =ndnfdl>" \
-#      "\n<name dnsdnl />" \
-#      "\n<author>Bjbfjnfo" \
-#      "\n</book>" \
+#      "\n\t<book id =ndnfdl>" \
+#      "\n\t\t<name dnsdnl />" \
+#      "\n\t\t<author>Bjbfjnfo</author>" \
+#      "\n\t</book>" \
 #      "\n</catalog>" \
-#
+# #
 #
 # mm = "<?dnlndjNNv'vnvfd?>" \
 #      "<!--dshdsivpisvn-->" \
@@ -252,5 +245,5 @@ def prettify_code(s: str):
 # print(mm)
 # print(mark_error(mm))
 #
-# print(fix_error(ss))
+# print(fix_error(ff))
 # print(prettify_code(fix_error(ss)))
