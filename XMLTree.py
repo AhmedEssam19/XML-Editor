@@ -104,15 +104,15 @@ class RefStr:
 def XML2json(tree):
     str = RefStr("{\n")
     square = False
-    dfs(tree.get_root(), 1, str, square)
+    dfs(tree.get_root(), 1, str, square, False)
     str += "\n}"
     print(str)
     return str
 
 
-def dfs(node, depth, str, square):
+def dfs(node, depth, str, square, is_last):
     open_bracket = False
-    open_square = False
+
     if not node.is_leaf():
         str += f'{"  " * depth}'
 
@@ -139,15 +139,21 @@ def dfs(node, depth, str, square):
         if len(node.get_properties()) > 0 and node.get_children()[0].is_leaf():
             str += f'{"  " * depth} "#text": '
 
-    for child in reversed(node.get_children()):
-        for i in range(len(node.get_children())):
-            # err at index
-            if child.tag == node.get_children()[i].tag and node.get_children().index(child) != i:
+    # for child in reversed(node.get_children()):
+    for i in reversed(range(len(node.get_children()))):
+
+        for j in range(len(node.get_children())):
+            # err at index*
+            if node.get_children()[i].tag == node.get_children()[j].tag and i != j:
+                is_last = False
+                if i == 0:
+                    is_last = True
+                square = False
                 if not node.get_children()[i].is_printed:
                     square = True
-                node.get_children()[i].is_printed = True
+                    node.get_children()[j].is_printed = True
 
-        dfs(child, depth + 1, str, square)
+        dfs(node.get_children()[i], depth + 1, str, square, is_last)
 
     if open_bracket:
         if depth > 1:
@@ -155,33 +161,8 @@ def dfs(node, depth, str, square):
         else:
             str += f'{"  " * depth}}}'
 
-    if node.is_printed and not square:
+    if node.is_printed and is_last:
         str += f'{"  " * depth}],\n'
-
-
-#
-# def dfs(node, depth):
-#     open_bracket = False
-#     if not node.is_leaf():
-#         print("  " * depth, end="")
-#     print(f'"{node.tag}"', end="")
-#     if node.is_leaf():
-#         print(",")
-#     elif not node.is_leaf():
-#         print(":", end=" ")
-#     if node.height() > 1 or len(node.get_properties()) > 0:
-#         open_bracket = True
-#         print("{")
-#         key = list(node.get_properties().keys())
-#         val = list(node.get_properties().values())
-#         for i in range(len(node.get_properties())):
-#             print(f'{"  " * depth} "{key[i]}": {val[i]},')
-#
-#     for child in reversed(node.get_children()):
-#         dfs(child, depth + 1)
-#
-#     if open_bracket:
-#         print(f'{"  " * depth}}}')
 
 
 def main():
