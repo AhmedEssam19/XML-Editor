@@ -4,6 +4,7 @@ import re
 class Node:
     def __init__(self, name):
         self.tag = name
+        self.is_printed = False
 
         self.children = []
         self.tagProperties = ""
@@ -73,7 +74,6 @@ class XMLTree:
 
                 # the open tag is next to the data without spacing, this cond. check if there's data or it just open tag
                 if stack_top[-1] != '>':
-
                     # if there's data, extract it
                     split_tag_from_data = stack_top.partition('>')
                     node.add_child(Node(split_tag_from_data[2]))
@@ -102,41 +102,61 @@ class RefStr:
 
 
 def XML2json(tree):
-    str = RefStr()
-    print("{")
-    dfs(tree.get_root(), 1, str)
+    str = RefStr("{\n")
+    square = False
+    dfs(tree.get_root(), 1, str, square)
+    str += "\n}"
     print(str)
-    print('}')
+    return str
 
 
-def dfs(node, depth, str):
+def dfs(node, depth, str, square):
     open_bracket = False
+    open_square = False
     if not node.is_leaf():
-        str += f'{"  "*depth}'
-    str += f'"{node.tag}"'
-    if node.is_leaf():
-        str += ",\n"
-    elif not node.is_leaf():
-        str += ":"
+        str += f'{"  " * depth}'
+
+    if not node.is_printed:
+        str += f'"{node.tag}"'
+        if node.is_leaf():
+            str += ",\n"
+
+        elif not node.is_leaf():
+            str += ":"
+
+    if square:
+        square = False
+        str += "[\n"
+        str += f'{"  " * depth}'
+
     if node.height() > 1 or len(node.get_properties()) > 0:
         open_bracket = True
-        str += "{\n"
+        str += " {\n"
         key = list(node.get_properties().keys())
         val = list(node.get_properties().values())
         for i in range(len(node.get_properties())):
-            str += f'{"  "*depth} "{key[i]}": {val[i]},\n'
+            str += f'{"  " * depth} "{key[i]}": {val[i]},\n'
         if len(node.get_properties()) > 0 and node.get_children()[0].is_leaf():
             str += f'{"  " * depth} "#text": '
 
     for child in reversed(node.get_children()):
-        dfs(child, depth+1, str)
+        for i in range(len(node.get_children())):
+            # err at index
+            if child.tag == node.get_children()[i].tag and node.get_children().index(child) != i:
+                if not node.get_children()[i].is_printed:
+                    square = True
+                node.get_children()[i].is_printed = True
+
+        dfs(child, depth + 1, str, square)
 
     if open_bracket:
         if depth > 1:
-            str += f'{"  "*depth}}},\n'
+            str += f'{"  " * depth}}},\n'
         else:
             str += f'{"  " * depth}}}'
 
+    if node.is_printed and not square:
+        str += f'{"  " * depth}],\n'
 
 
 #
@@ -184,6 +204,9 @@ def main():
                 </follower>
                 <follower>
                     <id>4</id>
+                </follower>
+                <follower>
+                    <id>ahmed</id>
                 </follower>
             </followers>
         </user>
