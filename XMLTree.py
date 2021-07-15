@@ -131,7 +131,7 @@ def dfs(node, depth, str, square, is_last):
 
     if node.height() > 1 or len(node.get_properties()) > 0:
         open_bracket = True
-        str += " {\n"
+        str += "{\n"
         key = list(node.get_properties().keys())
         val = list(node.get_properties().values())
         for i in range(len(node.get_properties())):
@@ -180,6 +180,7 @@ def main():
                 </post>
             </posts>
             <followers>
+                <myLove>oKkK</myLove>
                 <follower>
                     <id wa7ed="ana" etnen="mostafa">2</id>
                 </follower>
